@@ -1,0 +1,85 @@
+{% extends 'header.html' %}
+{% block content %}
+
+<header class="pt-5 pb-4 masthead border-dark shadow" style="background-image: url('/static/images/statue-bg.png')" id="home">
+  <div class="container position-relative overflow-hidden px-3 p-md-5 mx-md-7 py-5 text-center">
+    <div class="col-md-6 p-lg-5 mx-auto mb-5">
+      <h1 class="display-4 fw-normal">LawLink</h1>
+      <p class="lead font-weight-normal mb-3">
+          In the complex world of legal matters, finding the right attorney for your case is crucial.
+          LawLink is your trusted online portal, designed to bridge the gap between individuals seeking
+          legal assistance and attorneys ready to take on new clients.
+      </p>
+
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center pb-4 mb-1">
+          {% if not current_user.is_authenticated: %}
+            <a type="button" class="btn btn-brown btn-lg px-4 ms-1" href="#features">Learn More</a>
+          {% else: %}
+            <a type="button" class="btn btn-brown btn-lg px-4 ms-1" href="/search">Start Searching</a>
+          {% endif %}
+        </div>
+    </div>
+  </div>
+</header>
+
+<body>
+  <div class="container px-4 pt-5 pb-1" id="features">
+    <div class="flex-lg-row-reverse align-items-center pt-5 pb-4 ms-4">
+      <div class="col-15">
+        <div id="carousel" class="carousel slide px-5" data-bs-ride="carousel">
+          <div class="carousel-inner ms-2">
+            <div class="carousel-item active">
+              <div class="row">
+                <div class="col mt-4 pt-3">
+                  <h1 class="fw-light mt-5 py-2" style="color: #2e2923; text-decoration: underline; text-decoration-thickness: 0.1rem; text-underline-offset: 6px">Chat with Users</h1>
+                  <p class="lead mt-2 mb-0">
+                    LawLink fosters a collaborative legal ecosystem by offering registered users an open chat feature. This facilitates direct communication, enabling lawyers, legal professionals, and clients to exchange ideas, seek advice, and build valuable connections, fostering a vibrant online legal community.
+                  </p>
+                </div>
+                <div class="col">
+                  <img src="static/images/chats.png" height="80%" width="80%" class="ms-5 ps-3 d-block img-fluid" alt="...">
+                </div>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <div class="row">
+                <div class="col mt-4 pt-3">
+                  <h1 class="fw-light mt-5 py-2" style="color: #2e2923; text-decoration: underline; text-decoration-thickness: 0.1rem; text-underline-offset: 6px">Search for Lawyers</h1>
+                  <p class="lead mt-2 mb-0">
+                    Users benefit from a robust lawyer search functionality on LawLink, allowing them to efficiently find legal experts based on specific criteria such as practice areas, location, and expertise. This empowers individuals to connect with the right legal professionals tailored to their unique needs and requirements.
+                  </p>
+                </div>
+                <div class="col">
+                  <img src="static/images/search.png" height="80%" width="80%" class="ms-5 ps-3 d-block img-fluid" alt="...">
+                </div>
+              </div>
+            </div>
+            <div class="carousel-item">
+              <div class="row">
+                <div class="col mt-4 pt-3">
+                  <h1 class="fw-light mt-4 py-2" style="color: #2e2923; text-decoration: underline; text-decoration-thickness: 0.1rem; text-underline-offset: 6px">Create Profiles</h1>
+                  <p class="lead mt-2 mb-0">
+                    LawLink provides a dedicated space for lawyers to create detailed profiles, showcasing their professional background, areas of specialization, educational qualifications, and other pertinent information. This feature not only enhances the visibility of legal professionals but also helps users make informed decisions when selecting legal representation.
+                  </p>
+                </div>
+                <div class="col">
+                  <img src="static/images/profile.png" height="80%" width="80%" class="ms-5 ps-3 d-block img-fluid" alt="...">
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon opacity-75" style="background-color: gray; position: absolute; left: 0px" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon opacity-50"  style="background-color: black"  aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+{% include 'footer.html' %}
+{% endblock %}

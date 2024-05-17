@@ -1,0 +1,98 @@
+{% extends 'header.html' %}
+{% block content %}
+<body style="background-image: url('/static/images/.png')">
+  <section class="mt-4 container">
+    <div class="text-center row">
+      <div class="col-lg-6 col-md-8 mx-auto">
+        <h1 class="fw-light pt-1 pb-2" style="color: #4f3c25">Open Chat</h1>
+      </div>
+    </div>
+    {% if user.is_authenticated %}
+      <h5 class="text-brown">Welcome {{ user.username }} <small class="ms-2 lead text-muted">(Make sure not to reveal any personal details.)</small></h5>
+    {% else %}
+      <h5 class="text-brown">Login to Chat</h5>
+    {% endif %}
+  </section>
+
+  <div class="container py-1 border-bottom">
+    <div class="message_holder overflow-y-scroll" style="max-height: 60vh">
+      {% for i in range(0, n) %}
+        <div class="mt-1 mb-2 pe-5 me-5">
+          <div class="d-flex align-items-start px-3 py-1 border rounded shadow-sm" style="background-color: #fbfbfb">
+            {% if users[i].id|string in admins  %}
+              {% set color = 'danger' %}
+            {% endif %}
+            {% if users[i].username == current_user.username %}
+              {% set color = 'primary' %}
+            {% endif %}
+            {% if users[i].lawyer %}
+              <img src="{{ url_for('static', filename=users[i].lawyer.pic_url) }}" height="35" width="35" class="border rounded-circle me-1 mt-1">
+              <a href="/profile/{{ users[i].lawyer.id }}" class="text-brown mt-2 ms-1 fw-bold text-decoration-none text-{{color}}">{{ names[i] }}</a>
+            {% else %}
+              <img src="static/images/user.png" height="35" width="35" class="border rounded-circle me-1 mt-1">
+              <b class="mt-2 ms-1 text-{{color}}">{{ names[i] }}</b>
+            {% endif %}
+            <p style="max-width: 1200px" class="ms-1 mt-2 fw-normal my-2">{{ msgs[i] }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="container position-fixed bottom-0 end-0 mb-4" id="scroll">
+    <form action="" method="POST">
+      {% if user.lawyer.id %}
+        <input type="hidden" class="username" value="{{ user.username+'(Lawyer)' }}"/>
+      {% else %}
+        <input type="hidden" class="username" value="{{ user.username }}"/>
+      {% endif %}
+
+      {% if user.is_authenticated %}
+        <input type="text" class="bg-light message py-3 rounded border border-secondary" size="125px" style="border: none" required/>
+        <button type="submit" class="bg-light btn btn-outline-light border border-secondary pt-2 pb-1 mb-1 px-2">
+          <svg xmlns="http://www.w3.org/2000/svg"  width="28" height="44"  fill="#8a6b3f" class="bi bi-send-fill" viewBox="0 0 16 16">
+            <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
+          </svg>
+        </button>
+      {% else %}
+        <input placeholder="&nbsp;&nbsp;&nbsp;Login to chat" type="text" class="opacity-50 message py-3 rounded border border-secondary" size="125px" style="border: none" disabled="disabled" required/>
+        <button disabled type="submit" class="bg-light btn btn-outline-light border border-secondary pt-2 pb-1 mb-1 px-2">
+          <svg xmlns="http://www.w3.org/2000/svg"  width="28" height="44"  fill="#8a6b3f" class="bi bi-send-fill" viewBox="0 0 16 16">
+            <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
+          </svg>
+        </button>
+      {% endif %}
+    </form>
+  </div>
+  <script type="text/javascript">
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+    socket.on( 'connect', function() {
+      socket.emit( 'chat', {
+        data: 'User Connected'
+      } )
+      var form = $( 'form' ).on( 'submit', function( e ) {
+        e.preventDefault()
+        let user_name = $( 'input.username' ).val()
+        let user_input = $( 'input.message' ).val()
+        socket.emit( 'chat', {
+          user_name : user_name,
+          message : user_input
+        } )
+        $( 'input.message' ).val( '' ).focus()
+      } )
+    } )
+    socket.on( 'response', function( msg ) {
+      console.log( msg )
+
+      if( typeof msg.user_name !== 'undefined' ) {
+        $( 'div.message_holder' ).append( '<div class="mt-1 mb-2 pe-5 me-5">'+
+        '<div class="d-flex align-items-start px-3 py-1 border rounded" style="background-color: #fbfbfb">'+
+        '<img src="static/images/user.png" height="35" width="35" class="border rounded-circle me-1 mt-1">'+
+        '<a href="/profile/{{ current_user.lawyer.id }}" class="mt-2 ms-1 mt-2 ms-1 fw-bold text-decoration-none">'+msg.user_name+':</a>'+
+        '<p style="max-width: 1200px" class="ms-1 mt-2 fw-normal my-2">'+msg.message+'</p></div></div>' )
+      }
+    })
+  </script>
+</body>
+{% endblock %}

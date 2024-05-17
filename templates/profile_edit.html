@@ -1,0 +1,173 @@
+{% extends 'header.html' %}
+{% block content %}
+<div class="shadow mb-5 pt-4 " style="background-image: url('static/images/inv-white.png')">
+  <div class="px-5 pb-4 pt-2 text-center">
+    <div class="container">
+      <h1 class="text-body-emphasis">Lawyer Profile</h1>
+      <p class="col-lg-6 mx-auto lead">
+        Provide your details about your education, experience, area of expertise and more to create your own LawLink Laywer profile.
+      </p>
+    </div>
+  </div>
+</div>
+<section>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <p class="text-danger ms-5 ps-5">{{ messages[0] }}</p>
+    {% endif %}
+  {% endwith %}
+  <div class="col-lg-9" style="margin-left: 90px">
+    <div class="col-md-7 order-2 order-lg-1">
+      <form id="profileForm" enctype="multipart/form-data" class="mx-1 mx-md-4" data-sb-form-api-token="API_TOKEN" action="{{ url_for('profile_edit') }}" method="post">
+        <div class="d-flex flex-row">
+          <div class="col-12">
+            <div class="d-flex flex-row mb-2">
+              <div class="form-outline flex-fill mb-0">
+                <label class="form-label" for="name">Your Full Name</label>
+                <input type="text" id="name" name="name" class="form-control" size="75%" value="{{ lawyer.name }}"/>
+              </div>
+              <div class="ms-1">
+                <label class="form-label" for="lawyer_pic">Profile Picture</label>
+                <input type="file" id="lawyer_pic" name="lawyer_pic" class="btn btn-secondary me-3 form-control bg-light-brown" value="" required>
+              </div>
+            </div>
+            <div class="d-flex flex-row align-items-center mb-2">
+              <div class="form-outline flex-fill mb-0">
+                <label class="form-label" for="id">Bar Council ID</label>
+                <input type="text" id="id" name="id" size="75%" class="form-control" value="{{ lawyer.bar_council_id }}"/>
+              </div>
+              <div class="ms-1">
+                <label class="form-label" for="id_pic">ID Card Picture</label>
+                <input type="file" id="id_pic" name="id_pic" class="btn btn-secondary form-control bg-light-brown" value=""  required>
+              </div>
+            </div>
+            <div class="d-flex flex-row mb-2">
+              <div class="form-outline flex-fill mb-0">
+                <label class="form-label" for="bio">Bio</label>
+                <textarea id="bio" name="bio" class="form-control" style="height: 7em">{{ lawyer.bio }}</textarea>
+              </div>
+            </div>
+            <div class="d-flex flex-row mb-2">
+              <div class="form-outline flex-fill mb-0">
+                <label class="form-label" for="bio">Level of Education:</label>
+                <input type="text" id="education" name="education" class="form-control col" value="{{ lawyer.education }}"/>
+              </div>
+              <div class="form-outline mt-4">
+                <button id="case" class="btn btn-brown dropdown-toggle mt-2 ms-3" type="button" data-bs-toggle="dropdown" aria-expanded="false" value="{{ lawyer.expertise }}">Area of Expertise: {{ lawyer.expertise }}</button>
+                <input id="icase" hidden="hidden" value="{{ lawyer.expertise }}" name="expertise" required>
+                <ul class="dropdown-menu">
+                  <li><button type="button" class="dropdown-item btn btn-light" onclick="change('case', 'Criminal', 'Expertise: Criminal')">Criminal</button></li>
+                  <li><button type="button" class="dropdown-item btn btn-light" onclick="change('case', 'Family', 'Expertise: Family')">Family</button></li>
+                  <li><button type="button" class="dropdown-item btn btn-light" onclick="change('case', 'Property', 'Expertise: Property')">Property</button></li>
+                  <li><button type="button" class="dropdown-item btn btn-light" onclick="change('case', 'Intellectual Property', 'Expertise: Intellectual Property')">Intellectual Property</button></li>
+                  <li><button type="button" class="dropdown-item btn btn-light" onclick="change('case', 'Employment', 'Expertise: Employment')">Employment</button></li>
+                  <li><button type="button" class="dropdown-item btn btn-light" onclick="change('case', 'Entertainment', 'Expertise: Entertainment')">Entertainment</button></li>
+                  <li><button type="button" class="dropdown-item btn btn-light" onclick="change('case', 'Malpractice', 'Expertise: Malpractice')">Malpractice</button></li>
+                  <li><button type="button" class="dropdown-item btn btn-light" onclick="change('case', 'Constitutional', 'Expertise: Constitutional')">Constitutional</button></li>
+                  <li><button type="button" class="dropdown-item btn btn-light" onclick="change('case', 'Business', 'Expertise: Business')">Business</button></li>
+                  <li><button type="button" class="dropdown-item btn btn-light" onclick="change('case', 'Civil', 'Expertise: Civil')">Civil</button></li>
+                  <li><button type="button" class="dropdown-item btn btn-light" onclick="change('case', '', 'Main Area of Expertise')">None</button></li>
+                </ul>
+              </div>
+            </div>
+            <div class="d-flex flex-row align-items-center mb-3">
+              <div class="form-outline flex-fill mb-0">
+                <label class="form-label" for="fee">Consultation Fee</label>
+                <input type="text" id="fee" name="fee" class="form-control" value="{{ lawyer.fee }}"/>
+              </div>
+              <div class="form-outline mt-4">
+                <button id="Location" class="btn btn-brown dropdown-toggle mt-2 ms-3" type="button" data-bs-toggle="dropdown" aria-expanded="false" value="{{ lawyer.location }}">Location: {{ lawyer.location }}</button>
+                <input id="iLocation" hidden="hidden" value="{{ lawyer.location }}" name="location">
+                <ul class="dropdown-menu">
+                  <li>
+                    <input class="form-control" autocomplete="off" list="datalistOptions" id="exampleDataList" placeholder="State in India" onchange="change('Location', this.value, this.value)">
+                    <datalist id="datalistOptions">
+                      <option value="Andhra Pradesh">
+                      <option value="Arunachal Pradesh">
+                      <option value="Assam">
+                      <option value="Bihar">
+                      <option value="Chhattisgarh">
+                      <option value="Goa">
+                      <option value="Gujarat">
+                      <option value="Haryana">
+                      <option value="Himachal Pradesh,">
+                      <option value="Jharkhand">
+                      <option value="Karnataka">
+                      <option value="Kerala">
+                      <option value="Madhya Pradesh">
+                      <option value="Maharashtra">
+                      <option value="Manipur">
+                      <option value="Meghalaya">
+                      <option value="Mizoram">
+                      <option value="Nagaland">
+                      <option value="Odisha">
+                      <option value="Punjab">
+                      <option value="Rajasthan">
+                      <option value="Sikkim">
+                      <option value="Tamil Nadu">
+                      <option value="Telangana">
+                      <option value="Tripura">
+                      <option value="Uttar Pradesh">
+                      <option value="Uttarakhand">
+                      <option value="West Bengal">
+                    </datalist>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="d-flex flex-row align-items-center mb-3">
+              <div class="form-outline flex-fill mb-0">
+                <label class="form-label" for="experience">Years of Experience</label>
+                <input type="number" id="experience" name="experience" class="form-control" value="{{ lawyer.experience }}"/>
+              </div>
+              <div class="form-outline flex-fill mb-0">
+                <label class="form-label" for="ongoing">Ongoing Cases</label>
+                <input type="number" id="ongoing" name="ongoing" class="form-control" value="{{ lawyer.ongoing }}"/>
+              </div>
+              <div class="form-outline flex-fill mb-0">
+                <label class="form-label" for="won">No. of Cases Won</label>
+                <input type="number" id="won" name="won" class="form-control" value="{{ lawyer.won }}"/>
+              </div>
+              <div class="form-outline flex-fill mb-0">
+                <label class="form-label" for="lost">No. of Cases Lost</label>
+                <input type="number" id="lost" name="lost" class="form-control" value="{{ lawyer.lost }}"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="ms-5 col-11">
+            <div class="form-outline flex-fill mb-2">
+              <label class="form-label" for="phone">Phone</label>
+              <input type="number" id="phone" name="phone" class="form-control" value="{{ lawyer.phone }}" minlength="10"/>
+            </div>
+            <div class="form-outline flex-fill mb-2">
+              <label class="form-label" for="email">Contact Email</label>
+              <input type="email" id="email" name="email" class="form-control" value="{{ lawyer.email }}"/>
+            </div>
+
+            <label for="social" class="form-label">Social Medias</label>
+            <div class="d-flex flex-row">
+              {% if not lawyer.lawyer_contact %}
+                <input type="text" class="form-control mb-1" id="social" placeholder="Social Media Name" value="" required>
+                <input type="text" class="form-control mb-1" id="username" placeholder="@Username" value="" required>
+              {% else: %}
+                <input type="text" class="form-control mb-1" id="social" placeholder="Social Media Name" value="{{ lawyer.lawyer_contact[0].socials[:-1] }}" required>
+                <input type="text" class="form-control mb-1" id="username" placeholder="@Username" value="{{ lawyer.lawyer_contact[0].usernames }}" required>
+              {% endif %}
+            </div>
+            <div id="input_box" class=""></div>
+            <div class="mb-3">
+              <button onclick="add()" type="button" class="btn btn-outline-brown">Add</button>
+              <button onclick="remove()" type="button" class="btn btn-brown my-1" >Remove</button>
+            </div>
+            <input type="hidden" class="form-control" value="1" id="total_inputs">
+            <input type="hidden" class="form-control" value="" id="contact" name="contact">
+          </div>
+        </div>
+        <button type="submit" onclick="save()" name="profile" class="btn btn-brown btn-lg mb-3">Create Profile</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% include 'footer.html' %}
+{% endblock %}
