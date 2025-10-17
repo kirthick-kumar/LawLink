@@ -13,6 +13,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import random
 
+
 admins = ['1']
 app = Flask(__name__, static_folder=r'D:\Studies\Pycharm\Projects\Chat Test\static')
 app.config['SECRET_KEY'] = 'vnkdjnfjknfl1232#'
