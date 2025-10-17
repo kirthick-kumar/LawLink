@@ -13,11 +13,6 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import random
 
-# pip install Flask-SQLAlchemy
-# pip install Flask-Login
-# pip install Flask-SocketIO
-# pip install bootstrap-flask
-
 admins = ['1']
 app = Flask(__name__, static_folder=r'D:\Studies\Pycharm\Projects\Chat Test\static')
 app.config['SECRET_KEY'] = 'vnkdjnfjknfl1232#'
@@ -587,8 +582,4 @@ def contact():
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD
     socketio.run(app, debug=True, allow_unsafe_werkzeug=True)
-=======
-    socketio.run(app, allow_unsafe_werkzeug=True)
->>>>>>> ae5eab7fc40e0993d83a0ecc7781c20b62b93cd9
