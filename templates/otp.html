@@ -1,0 +1,52 @@
+{% extends 'header.html' %}
+{% block content %}
+<section class="vh-100" id="signup">
+  <div class="container h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-lg-12 col-xl-10">
+        <div class="card text-black" style="border-radius: 25px;">
+          <div class="card-body p-md-5">
+            <div class="row justify-content-center">
+              <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
+                <p class="text-center h1 fw-bold mx-1 mx-md-4 mt-4">Sign up</p>
+                <p class="text-center lead mx-1 mx-md-4 mb-4">LawLink, for both Clients and Lawyers</p>
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                      <p style="color: red" class="ms-4 ps-3">{{ messages[0] }}</p>
+                  {% endif %}
+                {% endwith %}
+                <form id="signupForm" class="mx-1 mx-md-4" data-sb-form-api-token="API_TOKEN" action="{{ url_for('send_otp') }}" method="post">
+                  <input hidden="hidden" value="{{ name }}" name="name">
+                  <input hidden="hidden" value="{{ user_email }}" name="email">
+                  <input hidden="hidden" value="{{ user_password }}" name="password">
+                  <div class="d-flex flex-row align-items-center ms-3 mb-2">
+                    <div class="form-outline flex-fill mb-0">
+                      <label class="form-label" for="otp">Enter the OTP sent to your email</label>
+                      <input type="number" id="otp" name="otp" class="form-control" minlength="6" maxlength="6" required/>
+                    </div>
+                  </div>
+                  <div class="d-flex flex-row align-items-center ms-3 mb-4">
+                    <div class="form-outline mb-0">
+                      <label class="form-label me-1" for="lawyer">Are you a Lawyer:</label>
+                      <input type="checkbox" id="lawyer" name="lawyer" class="mt-1 form-check-input flex-shrink-0" style="font-size: 1.375em; background-color: #2e2923; border-color: #8a6b3f"/>
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                    <button type="submit" name="signup" class="btn btn-brown btn-lg">Register</button>
+                  </div>
+                </form>
+              </div>
+
+              <div class="ps-5 col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
+                <img src="{{ url_for('static', filename='images/signup.png') }}" alt="Sample image" height="450px">
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% include 'footer.html' %}
+{% endblock %}

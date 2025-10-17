@@ -1,0 +1,40 @@
+{% extends 'header.html' %}
+{% block content %}
+<body>
+  <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center shadow rounded">
+    <div class="p-lg-5 mx-auto my-5 col-8">
+      <h1 class="display-2 fw-light pb-2 text-light rounded w mx-auto bg-brown" >About LawLink</h1>
+      <h4 class="fw-light text-muted mb-3">
+          Welcome to Lawlink, your premier online platform connecting individuals with experienced and trusted lawyers. LawLink is your trusted online portal, designed to bridge the gap between individuals seeking legal assistance and adept attorneys ready to take on new clients.
+      </h4>
+    </div>
+  </div>
+
+  <div class="row w-100 mt-3 ps-4 mt-5">
+    <div class="col ms-1 me-md-3 pt-3 px-2 pt-5 text-center overflow-hidden border rounded">
+      <div class="mt-3 pt-3">
+        <h2 class="display-5 pb-2 text-light rounded col-10 mx-auto bg-brown" >Empowering Clients</h2>
+        <p class="lead col-10 mx-auto">
+          Whether you're dealing with personal matters, business issues, or any legal concerns, Lawlink is here to help you make informed decisions.
+          Users experience real-time communication through our open chat feature, allowing users to engage with registered lawyers promptly.
+        </p>
+      </div>
+      <div class="mx-auto py-5">
+        <img src="static/images/empower_users.png" style="width: 55%; height: 55%;">
+      </div>
+    </div>
+    <div class="col text-light me-1 pt-5 text-center shadow-lg border rounded bg-brown" >
+      <div class="mt-3 pt-3">
+        <h2 class="display-5 pb-2 text-bg-light rounded col-10 mx-auto">Empowering Lawyers</h2>
+        <p class="lead mx-auto col-10">Lawyers on our platform have the opportunity to showcase their skills and experience through personalized profiles. By enabling lawyers to present their expertise, Lawlink enables legal professionals to connect with a wider audience and build their online presence.
+        </p>
+      </div>
+      <div class="mx-auto py-5">
+        <img src="static/images/lawyer-signup.png" style="width: 60%; height: 60%">
+      </div>
+    </div>
+  </div>
+
+</body>
+{% include 'footer.html' %}
+{% endblock %}

@@ -1,0 +1,173 @@
+{% extends 'header.html' %}
+{% block content %}
+<body>
+  <div class="container rounded bg-white mt-3 mb-5 shadow-lg">
+    <div class="row" style="min-height: 650px">
+      <div class="col-md-3 border">
+        <div class="d-flex flex-column text-center p-3 pt-5" >
+          <img class="rounded-circle mt-1 mx-auto shadow" width="150px" height="150px" src="{{ url_for('static', filename=lawyer.pic_url) }}" alt="">
+          <span class="font-weight-bold">{{ lawyer.name }}</span>
+          <span class="text-black-50 mt-2" style="min-height: 250px">{{ lawyer.bio }}</span>
+          {% if user.id == lawyer.user_id %}
+            <form action="{{ url_for('delete_profile_caller') }}" class="mt-5" method="post">
+              <a type="button" href="/editprofile" class="btn btn-brown">Edit Profile
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-pencil-square mb-1" viewBox="0 0 16 16">
+                  <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                  <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                </svg>
+              </a>
+              <button type="submit" name="delete" value="{{ lawyer.id }}" class="btn btn-danger pb-1">Delete Profile
+                <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" class="bi bi-trash-fill mb-1" viewBox="0 0 16 16">
+                  <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                </svg>
+              </button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-md-5 border">
+        <div class="p-3 py-5">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="text-light px-5 pt-1 pb-2 rounded bg-brown">{{ lawyer.user.username }}'s Profile</h2>
+          </div>
+          <div class="row mt-3">
+            <p class="lead fw-bold">Lawyer ID: <span class="fw-light pos-665">{{ lawyer.bar_council_id }}</span></p>
+            <p class="lead fw-bold">Experience: <span class="fw-light pos-665">{{ lawyer.experience }} Years</span></p>
+            <p class="lead fw-bold">Level of Education: <span class="fw-light pos-665">{{ lawyer.education }}</span></p>
+            <p class="lead fw-bold">Practising Location: <span class="fw-light pos-665">{{ lawyer.location }}</span></p>
+            <p class="lead fw-bold">Area of Expertise: <span class="fw-light pos-665">{{ lawyer.expertise }}</span></p>
+            <p class="lead fw-bold">Ongoing Cases: <span class="fw-light pos-665">{{ lawyer.ongoing }}</span></p>
+            <p class="lead fw-bold">Cases Won: <span class="fw-light pos-665">{{ lawyer.won }}</span></p>
+            <p class="lead fw-bold">Cases Lost: <span class="fw-light pos-665">{{ lawyer.lost }}</span></p>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
+            <h2 class="text-light px-5 pt-1 pb-2 rounded bg-brown">Rating</h2>
+          </div>
+
+          {% if lawyer.verified_count > 0: %}
+            {% set avg_rating = (lawyer.verified_sum/lawyer.verified_count)|round(1) %}
+            {% if avg_rating - avg_rating|int == 0.5: %}
+              {% set avg_rating = avg_rating|int + 0.5 %}
+            {% elif avg_rating - avg_rating|int > 0.5: %}
+              {% set avg_rating = avg_rating|int + 0.7 %}
+            {% elif avg_rating - avg_rating|int < 0.5 and avg_rating - avg_rating|int > 0.1: %}
+              {% set avg_rating = avg_rating|int + 0.2 %}
+            {% else: %}
+              {% set avg_rating = avg_rating %}
+            {% endif %}
+            <p class="lead fw-bold">Average Rating: <span class="fw-light" style="position: absolute; left: 660px">{{ rating_dict[avg_rating] }}</span></p>
+            <p class="lead fw-bold">Verified Ratings: <span class="fw-light pos-665">{{ lawyer.verified_count }}</span></p>
+          <!--            <p class="lead fw-bold">No. of Ratings: <span class="fw-light" style="position: absolute; left: 667px">1</span></p>-->
+          {% else %}
+            <p class="lead fw-bold">Average Rating: <span class="fw-light pos-665">No Verified Ratings</span></p>
+            <p class="lead fw-bold">Verified Ratings: <span class="fw-light pos-665">0</span></p>
+          <!--            <p class="lead fw-bold">No. of Ratings: <span class="fw-light" style="position: absolute; left: 667px">0</span></p>-->
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-md-4 border">
+        {% if user %}
+          <div class="p-3 mt-1">
+            <div class="d-flex justify-content-between align-items-center mb-3 mt-4 pt-1">
+              <h2 class="text-light px-4 pt-1 pb-2 rounded bg-brown" >&nbsp;Contact Information&nbsp;</h2>
+            </div>
+            <div class="col-md-12 mt-2 ms-1">
+              <h5 class="lead fw-bold">Email: <span class="fw-light pos-1110">{{ lawyer.email }}</span></h5>
+              <h5 class="lead fw-bold">Phone: <span class="fw-light pos-1110">{{ lawyer.phone }}</span></h5>
+            {% for contact in lawyer.lawyer_contact %}
+              <h5 class="lead fw-bold">{{ contact.socials }} <span class="fw-light pos-1110">@{{ contact.usernames }}</span></h5>
+            {% endfor %}
+              <h5 class="lead fw-bold">Consultation Fee: <span class="fw-light" style="position: absolute; left: 1180px">₹{{ lawyer.fee }}</span></h5>
+            </div>
+              <!-- Create Ratings -->
+            {% if user.id != lawyer.user_id %}
+              <form id="rating" class="col-md-12 mt-100" action="{{ url_for('profile', lawyer_id = lawyer.id) }}" method="post">
+                  <h5 >Rate Your Experience:</h5>
+                <div class="border shadow-sm py-2 mt-2 ps-2 col-6 rounded" style="font-size: 1.3rem">
+                  <input onclick="change_rating(1)" type="button" class="px-0 bg-white no-border ms-1" value="🌑" id="rate1" placeholder="">
+                  <input onclick="change_rating(2)" type="button" class="px-0 bg-white no-border" value="🌑" id="rate2">
+                  <input onclick="change_rating(3)" type="button" class="px-0 bg-white no-border" value="🌑" id="rate3">
+                  <input onclick="change_rating(4)" type="button" class="px-0 bg-white no-border" value="🌑" id="rate4">
+                  <input onclick="change_rating(5)" type="button" class="px-0 bg-white no-border" value="🌑" id="rate5">
+                  <input hidden="hidden" value="0" id="rating_value" name="rating_value">
+                  <input hidden="hidden" value="{{ user.username }}" id="reviewed_user" name="reviewed_user">
+                </div>
+                <input type="text" id="title" class="form-control py-2 my-3 shadow-sm fw-bold" name="title" placeholder="Title">
+                <textarea id="review" name="review" class="form-control my-3 shadow-sm" style="height: 9em" placeholder="Details"></textarea>
+                <button type="submit" class="btn btn-brown">Save</button>
+              </form>
+              <!-- Approve Ratings -->
+            {% elif user.id == lawyer.user_id %}
+            <div class="d-flex justify-content-between align-items-center mb-3 mt-100">
+                <h2 class="text-light px-5 pt-1 pb-2 rounded bg-brown" >Approve Ratings</h2>
+            </div>
+            <p class="lead">Check if these users are your clients</p>
+            <div style="max-height:220px;" class="overflow-y-scroll pe-1">
+              {% for rating in lawyer.lawyer_rating %}
+              {% if not rating.verified %}
+                <form id="approve" data-sb-form-api-token="API_TOKEN" action="" method="post">
+                  <div class="list-group-item d-flex gap-3 my-3 p-2 px-3 border rounded shadow-sm">
+                    {% if rating.rating_author.lawyer: %}
+                      <img class="rounded-circle mt-1 mx-auto" width="40px" height="40px" src="{{ url_for('static', filename=rating.rating_author.lawyer.pic_url) }}" alt="">
+                    {% else: %}
+                      <img class="rounded-circle mt-1 mx-auto" width="40px" height="40px" src="{{ url_for('static', filename='lawyer_pics/default.png') }}" alt="">
+                    {% endif %}
+                    <!-- <input class="form-check-input flex-shrink-0 bg-dark mt-3" name="approve" onclick="this.form.submit" type="checkbox" style="font-size: 1.375em; border-color: #212529" value="{{ i }}">-->
+                    <span class="pt-1 form-checked-content flex-grow-1">
+                      <strong>{{ rating.rating_author.username }}</strong>
+                      <small class="d-block text-muted">{{ rating.rating_date }}</small>
+                    </span>
+                    <button class="btn btn-success px-2 btn-sm" name="approve" value="{{ rating.author_id }}" type="submit">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-check-fill" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M15.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L12.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
+                        <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                      </svg>
+                    </button>
+                    <button class="btn btn-danger px-2 btn-sm" name="delete" value="{{ rating.author_id }}" type="submit">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-x-fill" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m6.146-2.854a.5.5 0 0 1 .708 0L14 6.293l1.146-1.147a.5.5 0 0 1 .708.708L14.707 7l1.147 1.146a.5.5 0 0 1-.708.708L14 7.707l-1.146 1.147a.5.5 0 0 1-.708-.708L13.293 7l-1.147-1.146a.5.5 0 0 1 0-.708"/>
+                      </svg>
+                    </button>
+                  </div>
+                </form>
+              {% endif %}
+              {% else: %}
+                <h2 class="text-muted ms-2 mt-4">No Reviews To Approve</h2>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+        {% else %}
+        <div class="d-flex justify-content-center row text-brown" style="margin-top: 250px">
+          <svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" fill="#723D32" class="bi bi-lock-fill mb-3" viewBox="0 0 16 16">
+            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2"/>
+          </svg>
+          <h1 class="d-flex justify-content-center text-brown bg-dark py-3">Login to Access</h1>
+          <h3 class="d-flex justify-content-center">Contact Information</h3>
+          <h3 class="d-flex justify-content-center">Rating and Review</h3>
+          <h3 class="d-flex justify-content-center">Review Approval</h3>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="mt-4 pb-5">
+      <h2 class="text-light ps-4 pt-1 pb-2 mb-3 col-4 rounded bg-brown" >All Ratings and Reviews</h2>
+      {% if lawyer.lawyer_rating and lawyer.verified_count > 0 %}
+      {% for rating in lawyer.lawyer_rating %}
+      {% if rating.verified %}
+        <div class="py-3 ps-3 border rounded shadow-sm mb-3">
+          <h4>{{ rating.rating_author.username }}<span class="h5 fw-light"> {{ rating.rating_date }}</span></h4>
+          <p class="fw-bold">{{ rating_dict[rating.rating] }}<span class="h5"> {{ rating.title }}</span></p>
+          <h5 class="fw-light">{{ rating.review }}</h5>
+        </div>
+      {% endif %}
+      {% endfor %}
+      {% else %}
+        <h2 class="text-center text-muted mt-5">No Verified Reviews Yet</h2>
+      {% endif %}
+    </div>
+  </div>
+</body>
+{% include 'footer.html' %}
+{% endblock %}
