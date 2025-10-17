@@ -32,5 +32,5 @@ def admin_only(function):
             return function(*args, **kwargs)
         else:
             flash("Login in as an admin to access that page", "error")
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('login'))
     return wrapper_function

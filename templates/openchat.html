@@ -14,23 +14,29 @@
     {% endif %}
   </section>
 
-  <div class="container py-1 border-bottom">
+  <div class="container py-1">
     <div class="message_holder overflow-y-scroll" style="max-height: 60vh">
       {% for i in range(0, n) %}
         <div class="mt-1 mb-2 pe-5 me-5">
           <div class="d-flex align-items-start px-3 py-1 border rounded shadow-sm" style="background-color: #fbfbfb">
-            {% if users[i].id|string in admins  %}
+            {% set color = 'dark' %}
+            {% if users[i].id and users[i].id|string in admins %}
               {% set color = 'danger' %}
             {% endif %}
             {% if users[i].username == current_user.username %}
               {% set color = 'primary' %}
             {% endif %}
+            
             {% if users[i].lawyer %}
               <img src="{{ url_for('static', filename=users[i].lawyer.pic_url) }}" height="35" width="35" class="border rounded-circle me-1 mt-1">
               <a href="/profile/{{ users[i].lawyer.id }}" class="text-brown mt-2 ms-1 fw-bold text-decoration-none text-{{color}}">{{ names[i] }}</a>
             {% else %}
-              <img src="static/images/user.png" height="35" width="35" class="border rounded-circle me-1 mt-1">
-              <b class="mt-2 ms-1 text-{{color}}">{{ names[i] }}</b>
+              <img src="{{ url_for('static', filename='images/user.png') }}" height="35" width="35" class="border rounded-circle me-1 mt-1">
+              {% if users[i].id %}
+                <b class="mt-2 ms-1 text-{{color}}">{{ names[i] }}</b>
+              {% else %}
+                <b class="mt-2 ms-1 text-{{color}}">{{ names[i] }}</b>
+              {% endif %}
             {% endif %}
             <p style="max-width: 1200px" class="ms-1 mt-2 fw-normal my-2">{{ msgs[i] }}</p>
           </div>
@@ -39,10 +45,10 @@
     </div>
   </div>
 
-  <div class="container position-fixed bottom-0 end-0 mb-4" id="scroll">
+  <div class="container position-fixed bottom-0 end-0 mb-2" id="scroll">
     <form action="" method="POST">
-      {% if user.lawyer.id %}
-        <input type="hidden" class="username" value="{{ user.username+'(Lawyer)' }}"/>
+      {% if user.lawyer %}
+        <input type="hidden" class="username" value="{{ user.username }}(Lawyer)"/>
       {% else %}
         <input type="hidden" class="username" value="{{ user.username }}"/>
       {% endif %}
@@ -88,9 +94,12 @@
       if( typeof msg.user_name !== 'undefined' ) {
         $( 'div.message_holder' ).append( '<div class="mt-1 mb-2 pe-5 me-5">'+
         '<div class="d-flex align-items-start px-3 py-1 border rounded" style="background-color: #fbfbfb">'+
-        '<img src="static/images/user.png" height="35" width="35" class="border rounded-circle me-1 mt-1">'+
-        '<a href="/profile/{{ current_user.lawyer.id }}" class="mt-2 ms-1 mt-2 ms-1 fw-bold text-decoration-none">'+msg.user_name+':</a>'+
+        '<img src="{{ url_for("static", filename="images/user.png") }}" height="35" width="35" class="border rounded-circle me-1 mt-1">'+
+        '<span class="mt-2 ms-1 fw-bold">'+msg.user_name+':</span>'+
         '<p style="max-width: 1200px" class="ms-1 mt-2 fw-normal my-2">'+msg.message+'</p></div></div>' )
+        
+        // Scroll to bottom
+        $('.message_holder').scrollTop($('.message_holder')[0].scrollHeight);
       }
     })
   </script>

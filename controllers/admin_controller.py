@@ -68,3 +68,19 @@ def delete_profile_caller():
         flash('Your profile has been deleted', 'success')
     
     return redirect(url_for('home'))
+
+@admin_only
+def chat_debug():
+    from controllers.chat_controller import get_chat_stats
+    stats = get_chat_stats()
+    return {
+        'redis_connected': stats['cache_ttl'] != -1,
+        'cached_messages': stats['cached_messages'],
+        'cache_ttl_seconds': stats['cache_ttl']
+    }
+
+@admin_only
+def clear_chat_cache_route():
+    from controllers.chat_controller import clear_chat_cache
+    clear_chat_cache()
+    return "Chat cache cleared"
