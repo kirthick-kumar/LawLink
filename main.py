@@ -587,4 +587,8 @@ def contact():
 
 
 if __name__ == '__main__':
+<<<<<<< HEAD
     socketio.run(app, debug=True, allow_unsafe_werkzeug=True)
+=======
+    socketio.run(app, allow_unsafe_werkzeug=True)
+>>>>>>> ae5eab7fc40e0993d83a0ecc7781c20b62b93cd9
