@@ -14,94 +14,246 @@
     {% endif %}
   </section>
 
-  <div class="container py-1">
+  <div class="container p-1">
     <div class="message_holder overflow-y-scroll" style="max-height: 60vh">
-      {% for i in range(0, n) %}
-        <div class="mt-1 mb-2 pe-5 me-5">
-          <div class="d-flex align-items-start px-3 py-1 border rounded shadow-sm" style="background-color: #fbfbfb">
+      {% for message in chat_history %}
+        <div class="mb-2 mx-2">
+          <div class="d-flex align-items-start border rounded shadow-sm p-2" style="background-color: #fbfbfb">
+            {% set username_clean = message.user_name.rstrip(':').replace('(Lawyer)', '').strip() %}
             {% set color = 'dark' %}
-            {% if users[i].id and users[i].id|string in admins %}
+            
+            {# Find user in database if exists #}
+            {% set found_user = none %}
+            {% for u in all_users %}
+              {% if u.username == username_clean %}
+                {% set found_user = u %}
+              {% endif %}
+            {% endfor %}
+            
+            {% if found_user and found_user.id|string in admins %}
               {% set color = 'danger' %}
             {% endif %}
-            {% if users[i].username == current_user.username %}
+            {% if found_user and found_user.username == current_user.username %}
               {% set color = 'primary' %}
             {% endif %}
             
-            {% if users[i].lawyer %}
-              <img src="{{ url_for('static', filename=users[i].lawyer.pic_url) }}" height="35" width="35" class="border rounded-circle me-1 mt-1">
-              <a href="/profile/{{ users[i].lawyer.id }}" class="text-brown mt-2 ms-1 fw-bold text-decoration-none text-{{color}}">{{ names[i] }}</a>
-            {% else %}
-              <img src="{{ url_for('static', filename='images/user.png') }}" height="35" width="35" class="border rounded-circle me-1 mt-1">
-              {% if users[i].id %}
-                <b class="mt-2 ms-1 text-{{color}}">{{ names[i] }}</b>
+            <div class="d-flex align-items-start flex-grow-1">
+              {% if found_user and found_user.lawyer %}
+                <img src="{{ url_for('static', filename=found_user.lawyer.pic_url) }}" height="35" width="35" class="border rounded-circle me-2 flex-shrink-0">
+                <a href="/profile/{{ found_user.lawyer.id }}" class="text-brown fw-bold text-decoration-none text-{{color}} align-self-center">{{ message.user_name }}</a>
               {% else %}
-                <b class="mt-2 ms-1 text-{{color}}">{{ names[i] }}</b>
+                <img src="{{ url_for('static', filename='images/user.png') }}" height="35" width="35" class="border rounded-circle me-2 flex-shrink-0">
+                <b class="text-{{color}} align-self-center">{{ message.user_name }}</b>
               {% endif %}
-            {% endif %}
-            <p style="max-width: 1200px" class="ms-1 mt-2 fw-normal my-2">{{ msgs[i] }}</p>
+              
+              <p class="ms-2 mb-0 flex-grow-1 align-self-center">{{ message.message }}</p>
+              
+              {% if message.timestamp and message.timestamp != 'unknown' %}
+                <small class="text-muted ms-2 flex-shrink-0 align-self-center">{{ message.timestamp }}</small>
+              {% endif %}
+            </div>
           </div>
         </div>
       {% endfor %}
     </div>
   </div>
 
-  <div class="container position-fixed bottom-0 end-0 mb-2" id="scroll">
-    <form action="" method="POST">
+  <div class="container">
+    <form id="chatForm" method="POST">
       {% if user.lawyer %}
-        <input type="hidden" class="username" value="{{ user.username }}(Lawyer)"/>
+        <input type="hidden" id="username" class="username" value="{{ user.username }}(Lawyer)"/>
       {% else %}
-        <input type="hidden" class="username" value="{{ user.username }}"/>
+        <input type="hidden" id="username" class="username" value="{{ user.username }}"/>
       {% endif %}
 
       {% if user.is_authenticated %}
-        <input type="text" class="bg-light message py-3 rounded border border-secondary" size="125px" style="border: none" required/>
-        <button type="submit" class="bg-light btn btn-outline-light border border-secondary pt-2 pb-1 mb-1 px-2">
-          <svg xmlns="http://www.w3.org/2000/svg"  width="28" height="44"  fill="#8a6b3f" class="bi bi-send-fill" viewBox="0 0 16 16">
-            <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
-          </svg>
-        </button>
+        <div class="input-group mb-3">
+          <input type="text" id="messageInput" class="form-control py-3 border-secondary" placeholder="Type your message..." required>
+          <button type="submit" class="btn btn-brown px-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" class="bi bi-send-fill" viewBox="0 0 16 16">
+              <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
+            </svg>
+          </button>
+        </div>
       {% else %}
-        <input placeholder="&nbsp;&nbsp;&nbsp;Login to chat" type="text" class="opacity-50 message py-3 rounded border border-secondary" size="125px" style="border: none" disabled="disabled" required/>
-        <button disabled type="submit" class="bg-light btn btn-outline-light border border-secondary pt-2 pb-1 mb-1 px-2">
-          <svg xmlns="http://www.w3.org/2000/svg"  width="28" height="44"  fill="#8a6b3f" class="bi bi-send-fill" viewBox="0 0 16 16">
-            <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
-          </svg>
-        </button>
+        <div class="input-group">
+          <input placeholder="Login to chat" type="text" class="form-control py-3 border-secondary opacity-50" disabled required>
+          <button disabled type="submit" class="btn btn-secondary px-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" class="bi bi-send-fill" viewBox="0 0 16 16">
+              <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
+            </svg>
+          </button>
+        </div>
       {% endif %}
     </form>
   </div>
+
+  <!-- Include Socket.IO client library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+  
   <script type="text/javascript">
-    var socket = io.connect('http://' + document.domain + ':' + location.port);
-
-    socket.on( 'connect', function() {
-      socket.emit( 'chat', {
-        data: 'User Connected'
-      } )
-      var form = $( 'form' ).on( 'submit', function( e ) {
-        e.preventDefault()
-        let user_name = $( 'input.username' ).val()
-        let user_input = $( 'input.message' ).val()
-        socket.emit( 'chat', {
-          user_name : user_name,
-          message : user_input
-        } )
-        $( 'input.message' ).val( '' ).focus()
-      } )
-    } )
-    socket.on( 'response', function( msg ) {
-      console.log( msg )
-
-      if( typeof msg.user_name !== 'undefined' ) {
-        $( 'div.message_holder' ).append( '<div class="mt-1 mb-2 pe-5 me-5">'+
-        '<div class="d-flex align-items-start px-3 py-1 border rounded" style="background-color: #fbfbfb">'+
-        '<img src="{{ url_for("static", filename="images/user.png") }}" height="35" width="35" class="border rounded-circle me-1 mt-1">'+
-        '<span class="mt-2 ms-1 fw-bold">'+msg.user_name+':</span>'+
-        '<p style="max-width: 1200px" class="ms-1 mt-2 fw-normal my-2">'+msg.message+'</p></div></div>' )
+    // Connect to chat microservice (running on port 5001)
+    const chatSocket = io('http://localhost:5001');
+    
+    // Track connection status
+    let isConnected = false;
+    
+    chatSocket.on('connect', function() {
+      console.log('✅ Connected to chat service');
+      isConnected = true;
+      
+      // Join chat with current username
+      {% if user.is_authenticated %}
+        const userName = document.getElementById('username').value;
+        chatSocket.emit('join_chat', {
+          user_name: userName
+        });
         
-        // Scroll to bottom
-        $('.message_holder').scrollTop($('.message_holder')[0].scrollHeight);
-      }
-    })
+        // Show connection status
+        addSystemMessage('Connected to chat', new Date().toLocaleTimeString());
+      {% endif %}
+    });
+    
+    chatSocket.on('disconnect', function() {
+      console.log('❌ Disconnected from chat service');
+      isConnected = false;
+      addSystemMessage('Disconnected from chat', new Date().toLocaleTimeString());
+    });
+    
+    chatSocket.on('new_message', function(data) {
+      console.log('📨 New message received:', data);
+      addMessageToChat(data.user_name, data.message, data.timestamp);
+    });
+    
+    chatSocket.on('user_joined', function(data) {
+      console.log('👤 User joined:', data);
+      addSystemMessage(data.message, data.timestamp);
+    });
+    
+    chatSocket.on('connected', function(data) {
+      console.log('🔗 Chat service connection confirmed:', data);
+    });
+    
+    chatSocket.on('error', function(data) {
+      console.error('💥 Chat error:', data.error);
+      addSystemMessage('Error: ' + data.error, new Date().toLocaleTimeString());
+    });
+    
+    // Function to add a user message to the chat
+    function addMessageToChat(userName, message, timestamp) {
+      const messageHtml = `
+        <div class="mb-2">
+          <div class="d-flex align-items-start border rounded shadow-sm p-2" style="background-color: #fbfbfb">
+            <div class="d-flex align-items-start flex-grow-1">
+              <img src="{{ url_for('static', filename='images/user.png') }}" height="35" width="35" class="border rounded-circle me-2 flex-shrink-0">
+              <span class="fw-bold align-self-center">${userName}:</span>
+              <p class="ms-2 mb-0 flex-grow-1 align-self-center">${message}</p>
+              ${timestamp ? `<small class="text-muted ms-2 flex-shrink-0 align-self-center">${timestamp}</small>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+      
+      $('.message_holder').append(messageHtml);
+      scrollToBottom();
+    }
+    
+    // Function to add system messages (user joined, errors, etc.)
+    function addSystemMessage(message, timestamp) {
+      const systemHtml = `
+        <div class="mb-2 text-center">
+          <small class="text-muted"><i>${message}</i> ${timestamp ? `- ${timestamp}` : ''}</small>
+        </div>
+      `;
+      
+      $('.message_holder').append(systemHtml);
+      scrollToBottom();
+    }
+    
+    // Function to scroll to bottom of chat
+    function scrollToBottom() {
+      const messageHolder = $('.message_holder');
+      messageHolder.scrollTop(messageHolder[0].scrollHeight);
+    }
+    
+    // Handle form submission
+    $(document).ready(function() {
+      $('#chatForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        {% if user.is_authenticated %}
+          if (!isConnected) {
+            alert('Not connected to chat service. Please refresh the page.');
+            return;
+          }
+          
+          const user_name = $('#username').val();
+          const user_input = $('#messageInput').val().trim();
+          
+          if (user_input) {
+            console.log('📤 Sending message:', user_input);
+            
+            // Send message to chat microservice
+            chatSocket.emit('chat_message', {
+              user_name: user_name,
+              message: user_input
+            });
+            
+            // Clear input field
+            $('#messageInput').val('').focus();
+          } else {
+            alert('Please enter a message');
+          }
+        {% else %}
+          alert('Please log in to send messages');
+        {% endif %}
+      });
+      
+      // Auto-focus message input for logged-in users
+      {% if user.is_authenticated %}
+        $('#messageInput').focus();
+      {% endif %}
+      
+      // Scroll to bottom on page load
+      scrollToBottom();
+      
+      // Add Enter key support
+      $('#messageInput').on('keypress', function(e) {
+        if (e.which === 13) { // Enter key
+          $('#chatForm').submit();
+        }
+      });
+    });
+    
+    // Debug: Log socket connection status
+    console.log('Socket connection state:', chatSocket.connected);
   </script>
+
+  <style>
+    .btn-brown {
+      background-color: #8a6b3f;
+      border-color: #8a6b3f;
+      color: white;
+    }
+    .btn-brown:hover {
+      background-color: #7a5b2f;
+      border-color: #7a5b2f;
+      color: white;
+    }
+    .message_holder {
+      scrollbar-width: thin;
+      scrollbar-color: #8a6b3f #f8f9fa;
+    }
+    .message_holder::-webkit-scrollbar {
+      width: 6px;
+    }
+    .message_holder::-webkit-scrollbar-track {
+      background: #f8f9fa;
+    }
+    .message_holder::-webkit-scrollbar-thumb {
+      background-color: #8a6b3f;
+      border-radius: 3px;
+    }
+  </style>
 </body>
 {% endblock %}

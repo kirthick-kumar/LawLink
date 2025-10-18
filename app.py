@@ -1,8 +1,8 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 from flask_bootstrap import Bootstrap5
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from flask_socketio import SocketIO
-import redis
+import os
 
 # Import models
 from models import db, User
@@ -10,8 +10,8 @@ from models import db, User
 # Import controllers
 from controllers.auth_controller import login, signup, verify_otp, logout
 from controllers.lawyer_controller import profile_edit, profile
-from controllers.chat_controller import openchat, handle_chat_event
-from controllers.admin_controller import admin, delete_profile_caller, chat_debug, clear_chat_cache_route
+from controllers.chat_controller import openchat, connect_to_chat_service
+from controllers.admin_controller import admin, delete_profile_caller
 from controllers.contact_controller import contact
 from controllers.search_controller import search as search_function
 
@@ -27,8 +27,6 @@ Bootstrap5(app)
 socketio = SocketIO(app)
 db.init_app(app)
 
-app.config['REDIS_URL'] = 'redis://localhost:6379/0'
-    
 # Login manager
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -38,16 +36,9 @@ login_manager.login_message_category = 'error'
 
 @login_manager.user_loader
 def load_user(user_id):
-    return db.session.execute(db.select(User).where(User.id == user_id)).scalar()
+    return db.session.get(User, int(user_id))
 
-def get_redis_connection():
-    try:
-        return redis.Redis.from_url(app.config['REDIS_URL'], decode_responses=True)
-    except redis.RedisError:
-        return None
-    
-
-# Routes - All simple endpoint names
+# Routes
 app.add_url_rule('/', 'home', lambda: render_template('index.html'))
 app.add_url_rule('/about', 'about', lambda: render_template('about.html'))
 app.add_url_rule('/login', 'login', login, methods=['GET', 'POST'])
@@ -59,17 +50,19 @@ app.add_url_rule('/profile/<lawyer_id>', 'profile', profile, methods=['POST', 'G
 app.add_url_rule('/search', 'search', search_function, methods=['POST', 'GET'])
 app.add_url_rule('/openchat', 'openchat', openchat)
 app.add_url_rule('/admin', 'admin', admin, methods=['POST', 'GET'])
-app.add_url_rule('/chat/debug', 'chat_debug', chat_debug, methods=['POST', 'GET'])
-app.add_url_rule('/chat/clear', 'clear_chat_cache_route', clear_chat_cache_route, methods=['POST', 'GET'])
 app.add_url_rule('/contact', 'contact', contact, methods=['POST', 'GET'])
 app.add_url_rule('/delete_profile', 'delete_profile', delete_profile_caller, methods=['POST', 'GET'])
 
-# SocketIO events
-socketio.on_event('chat', handle_chat_event)
 
-# Create tables
+# Create tables within application context
 with app.app_context():
     db.create_all()
+    # Connect to chat microservice on startup
+    chat_connected = connect_to_chat_service()
+    if chat_connected:
+        print("Successfully connected to chat microservice")
+    else:
+        print("Failed to connect to chat microservice - chat functionality may be limited")
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, allow_unsafe_werkzeug=True)
+    socketio.run(app, debug=True, allow_unsafe_werkzeug=True, port=5000)

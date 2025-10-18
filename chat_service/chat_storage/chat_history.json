@@ -1,0 +1,30 @@
+{
+  "metadata": {
+    "created_at": "2025-10-18 18:37:27",
+    "total_messages": 3,
+    "last_updated": "2025-10-18 18:55:38"
+  },
+  "messages": [
+    {
+      "user_name": "Kirthick",
+      "message": "hello",
+      "user_type": "client",
+      "timestamp": "2025-10-18 18:47:37",
+      "message_id": "msg_1760793457898"
+    },
+    {
+      "user_name": "Kirthick",
+      "message": "i need some assistance regarding some legal documents that i have to update",
+      "user_type": "client",
+      "timestamp": "2025-10-18 18:48:02",
+      "message_id": "msg_1760793482682"
+    },
+    {
+      "user_name": "Rick(Lawyer)",
+      "message": "I can help you with that kirthick just contact me so that we can discuss the details",
+      "user_type": "lawyer",
+      "timestamp": "2025-10-18 18:55:38",
+      "message_id": "msg_1760793938744"
+    }
+  ]
+}
